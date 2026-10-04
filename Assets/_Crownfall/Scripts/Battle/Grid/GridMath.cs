@@ -1,0 +1,1 @@
+using Crownfall.Core; namespace Crownfall.Battle.Grid { public static class GridMath { public static int Manhattan(GridCoordinate a, GridCoordinate b)=>System.Math.Abs(a.x-b.x)+System.Math.Abs(a.y-b.y); } }

@@ -1,0 +1,2 @@
+using System; using System.Collections.Generic; using Crownfall.Preparation;
+namespace Crownfall.Economy { [Serializable] public sealed class HeroSnapshot{public string InstanceId;public string HeroId;public int Star;public int BenchSlot=-1;public int X=-1,Y=-1;} [Serializable] public sealed class WaveSnapshot { public int Gold; public List<HeroSnapshot> Heroes=new List<HeroSnapshot>(); public List<ShopOffer> Offers=new List<ShopOffer>(); public bool ShopLocked; public int PaidRerolls; public bool FreeRefreshConsumed; } }
