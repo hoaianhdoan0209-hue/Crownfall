@@ -1,0 +1,59 @@
+name: Build Crownfall Windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build Windows x64
+    runs-on: windows-latest
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ hashFiles('Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ runner.os }}-
+
+      - name: Run EditMode tests
+        uses: game-ci/unity-test-runner@v4
+        with:
+          unityVersion: 6000.0.0f1
+          testMode: EditMode
+
+      - name: Build Crownfall
+        uses: game-ci/unity-builder@v4
+        with:
+          unityVersion: 6000.0.0f1
+          targetPlatform: StandaloneWindows64
+          buildMethod: Crownfall.Editor.CrownfallWindowsBuilder.BuildWindowsRelease
+
+      - name: Verify executable
+        shell: pwsh
+        run: |
+          if (!(Test-Path "Builds/Windows/Crownfall.exe")) {
+            throw "Builds/Windows/Crownfall.exe was not produced."
+          }
+
+      - name: Package Windows build
+        shell: pwsh
+        run: Compress-Archive -Path "Builds/Windows/*" -DestinationPath "Crownfall_Windows_x64.zip" -Force
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Crownfall-Windows-x64
+          path: Crownfall_Windows_x64.zip
+          if-no-files-found: error
