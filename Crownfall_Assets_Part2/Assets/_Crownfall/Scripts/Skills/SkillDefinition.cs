@@ -1,2 +1,0 @@
-using System.Collections.Generic; using UnityEngine;
-namespace Crownfall.Skills { public enum SkillTargetType{CurrentTarget,NearestEnemy,LowestHealthEnemy,LowestHealthAlly,FarthestEnemy,Self} [CreateAssetMenu(fileName="Skill",menuName="Crownfall/Skills/Definition")] public sealed class SkillDefinition:ScriptableObject { public string skillId; [Min(0)]public float energyCost=100; [Min(0)]public float castTime=.4f; [Min(0)]public float recoveryTime=.3f; public SkillTargetType targetType; public List<SkillEffectDefinition> effects=new(); } }
