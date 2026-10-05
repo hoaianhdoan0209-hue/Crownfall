@@ -1,0 +1,2 @@
+namespace Crownfall.Economy { public sealed class WaveEconomy { readonly BattleEconomy economy; public int FreeSummonTokens{get;private set;} public WaveEconomy(BattleEconomy e){economy=e;} public void AwardWave(int baseGold,int dead,int deployed,int survivors){economy.AddGold(baseGold);if(economy.Gold>=10)economy.AddGold(1);if(deployed>=4&&dead>=3)economy.AddGold(2);if(deployed>=4&&survivors==1)FreeSummonTokens++;} public bool TryConsumeFreeSummon(){if(FreeSummonTokens<=0)return false;FreeSummonTokens--;return true;} }
+}

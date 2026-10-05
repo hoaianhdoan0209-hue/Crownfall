@@ -1,0 +1,2 @@
+using System;
+namespace Crownfall.Stats { public enum StatType{MaxHealth,Attack,SkillPower,Armor,MagicResistance,AttackSpeed,MoveSpeed,AttackRange,CritChance,CritDamage,Dodge,Accuracy,Lifesteal,HealingPower,EnergyGeneration,Tenacity} public enum ModifierOperation{Flat,AdditivePercent,MultiplicativePercent,Override} [Serializable] public sealed class StatModifier { public string Id; public string Source; public StatType Stat; public ModifierOperation Operation; public float Value; public int Priority; } }
