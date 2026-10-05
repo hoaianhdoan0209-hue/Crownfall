@@ -8,6 +8,8 @@ using UnityEngine;
 
 namespace Crownfall.Editor
 {
+    // Keep Cloud Build and local release builds on the same player settings.
+    [InitializeOnLoad]
     public static class CrownfallWindowsBuilder
     {
         private static readonly string[] ReleaseScenes =
@@ -18,21 +20,42 @@ namespace Crownfall.Editor
             "Assets/_Crownfall/Scenes/03_Battle.unity"
         };
 
+        static CrownfallWindowsBuilder()
+        {
+            // Unity Build Automation does not call our custom menu build method by default.
+            // Apply the essential PlayerSettings as soon as the Editor loads the project.
+            ApplyPlayerSettings();
+        }
+
+        private static void ApplyPlayerSettings()
+        {
+            PlayerSettings.companyName = "Crownfall";
+            PlayerSettings.productName = "Crownfall";
+            PlayerSettings.bundleVersion = "1.0.0";
+
+            // Force a self-contained Windows IL2CPP player. This avoids depending on the
+            // Managed folder that was absent from Cloud Build #4's Mono artifact.
+            PlayerSettings.SetScriptingBackend(
+                BuildTargetGroup.Standalone,
+                ScriptingImplementation.IL2CPP);
+
+            PlayerSettings.SetArchitecture(BuildTargetGroup.Standalone, 1); // x86_64
+        }
+
         [MenuItem("Crownfall/Build/Prepare Release Settings")]
         public static void PrepareReleaseSettings()
         {
             ValidateReleaseScenes();
+
             EditorBuildSettings.scenes = ReleaseScenes
                 .Select(path => new EditorBuildSettingsScene(path, true))
                 .ToArray();
 
-            PlayerSettings.companyName = "Crownfall";
-            PlayerSettings.productName = "Crownfall";
-            PlayerSettings.bundleVersion = "1.0.0";
-            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetArchitecture(BuildTargetGroup.Standalone, 1); // x86_64
+            ApplyPlayerSettings();
             AssetDatabase.SaveAssets();
-            Debug.Log("Crownfall release settings prepared. Scenes: " + string.Join(", ", ReleaseScenes));
+
+            Debug.Log("Crownfall release settings prepared. Scenes: " +
+                      string.Join(", ", ReleaseScenes));
         }
 
         [MenuItem("Crownfall/Build/Windows x64 Release")]
@@ -55,21 +78,32 @@ namespace Crownfall.Editor
             };
 
             BuildReport report = BuildPipeline.BuildPlayer(options);
+
             if (report.summary.result != BuildResult.Succeeded)
-                throw new Exception("Crownfall Windows build failed: " + report.summary.result +
-                                    ". Errors: " + report.summary.totalErrors);
+                throw new Exception(
+                    "Crownfall Windows build failed: " + report.summary.result +
+                    ". Errors: " + report.summary.totalErrors);
 
             if (!File.Exists(exePath))
-                throw new FileNotFoundException("Unity reported success but Crownfall.exe was not found.", exePath);
+                throw new FileNotFoundException(
+                    "Unity reported success but Crownfall.exe was not found.",
+                    exePath);
 
-            Debug.Log($"Crownfall Windows x64 build complete: {exePath} ({report.summary.totalSize} bytes)");
+            Debug.Log(
+                $"Crownfall Windows x64 build complete: {exePath} " +
+                $"({report.summary.totalSize} bytes)");
         }
 
         private static void ValidateReleaseScenes()
         {
-            var missing = ReleaseScenes.Where(path => !File.Exists(Path.GetFullPath(path))).ToArray();
+            var missing = ReleaseScenes
+                .Where(path => !File.Exists(Path.GetFullPath(path)))
+                .ToArray();
+
             if (missing.Length > 0)
-                throw new FileNotFoundException("Missing Crownfall release scene(s): " + string.Join(", ", missing));
+                throw new FileNotFoundException(
+                    "Missing Crownfall release scene(s): " +
+                    string.Join(", ", missing));
         }
     }
 }
