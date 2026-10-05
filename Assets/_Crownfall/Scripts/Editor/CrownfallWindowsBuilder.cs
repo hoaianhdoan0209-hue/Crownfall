@@ -29,8 +29,8 @@ namespace Crownfall.Editor
             PlayerSettings.companyName = "Crownfall";
             PlayerSettings.productName = "Crownfall";
             PlayerSettings.bundleVersion = "1.0.0";
-            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.IL2CPP);
-            PlayerSettings.SetArchitecture(NamedBuildTarget.Standalone, 1); // x86_64
+            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetArchitecture(BuildTargetGroup.Standalone, 1); // x86_64
             AssetDatabase.SaveAssets();
             Debug.Log("Crownfall release settings prepared. Scenes: " + string.Join(", ", ReleaseScenes));
         }
