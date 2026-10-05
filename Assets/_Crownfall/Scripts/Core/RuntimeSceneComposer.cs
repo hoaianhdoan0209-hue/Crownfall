@@ -160,13 +160,14 @@ namespace Crownfall.Core
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1280, 720);
+            CreateForestFrame(canvasGo.transform);
 
             var panel = new GameObject("Panel", typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
             panel.transform.SetParent(canvasGo.transform, false);
             var rect = (RectTransform)panel.transform;
-            rect.anchorMin = new Vector2(.16f, .08f); rect.anchorMax = new Vector2(.84f, .92f);
+            rect.anchorMin = new Vector2(.19f, .07f); rect.anchorMax = new Vector2(.81f, .93f);
             rect.offsetMin = rect.offsetMax = Vector2.zero;
-            panel.GetComponent<Image>().color = new Color(.055f, .06f, .08f, .96f);
+            panel.GetComponent<Image>().color = new Color(.055f, .065f, .055f, .94f);
             var layout = panel.GetComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(28, 28, 24, 24); layout.spacing = 12;
             layout.childAlignment = TextAnchor.UpperCenter; layout.childControlHeight = true; layout.childForceExpandHeight = false;
@@ -190,7 +191,7 @@ namespace Crownfall.Core
         {
             var go = new GameObject("Button_" + label, typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
             go.transform.SetParent(parent, false);
-            go.GetComponent<Image>().color = new Color(.18f, .20f, .25f, 1f);
+            go.GetComponent<Image>().color = new Color(.22f, .25f, .19f, 1f);
             var button = go.GetComponent<Button>();
             if (action != null) button.onClick.AddListener(() => action());
             var le = go.GetComponent<LayoutElement>(); le.preferredHeight = 52; le.minHeight = 48;
@@ -201,11 +202,60 @@ namespace Crownfall.Core
             return button;
         }
 
+        private static void CreateForestFrame(Transform canvas)
+        {
+            var bg = new GameObject("ForestBackdrop", typeof(RectTransform), typeof(Image));
+            bg.transform.SetParent(canvas, false);
+            bg.transform.SetAsFirstSibling();
+            var rt = (RectTransform)bg.transform;
+            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
+            rt.offsetMin = rt.offsetMax = Vector2.zero;
+            bg.GetComponent<Image>().color = new Color(.10f, .13f, .09f, 1f);
+
+            // Layered edge foliage: deliberately simple runtime art so the game has
+            // a readable forest frame even before final hand-authored pixel assets.
+            for (int i = 0; i < 34; i++)
+            {
+                bool left = (i & 1) == 0;
+                var leaf = new GameObject("Foliage_" + i, typeof(RectTransform), typeof(Image));
+                leaf.transform.SetParent(bg.transform, false);
+                var lr = (RectTransform)leaf.transform;
+                float y = ((i * 73) % 690) / 720f;
+                float w = 110f + (i % 5) * 24f;
+                float h = 80f + (i % 4) * 22f;
+                lr.anchorMin = lr.anchorMax = new Vector2(left ? 0f : 1f, y);
+                lr.pivot = new Vector2(left ? 0f : 1f, .5f);
+                lr.anchoredPosition = new Vector2(left ? -12f : 12f, 0f);
+                lr.sizeDelta = new Vector2(w, h);
+                float shade = .10f + (i % 4) * .018f;
+                leaf.GetComponent<Image>().color = new Color(shade, shade + .055f, shade * .72f, .98f);
+            }
+
+            var ground = new GameObject("Clearing", typeof(RectTransform), typeof(Image));
+            ground.transform.SetParent(bg.transform, false);
+            var gr = (RectTransform)ground.transform;
+            gr.anchorMin = new Vector2(.12f, .04f); gr.anchorMax = new Vector2(.88f, .96f);
+            gr.offsetMin = gr.offsetMax = Vector2.zero;
+            ground.GetComponent<Image>().color = new Color(.20f, .22f, .16f, .70f);
+        }
+
         private static void EnsureEventSystem()
         {
-            if (FindFirstObjectByType<EventSystem>() != null) return;
-            var go = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
-            DontDestroyOnLoad(go);
+            var eventSystem = FindFirstObjectByType<EventSystem>();
+            GameObject go;
+            if (eventSystem == null)
+            {
+                go = new GameObject("EventSystem", typeof(EventSystem));
+                eventSystem = go.GetComponent<EventSystem>();
+                DontDestroyOnLoad(go);
+            }
+            else go = eventSystem.gameObject;
+
+            var inputModule = go.GetComponent<InputSystemUIInputModule>();
+            if (inputModule == null) inputModule = go.AddComponent<InputSystemUIInputModule>();
+            if (inputModule.actionsAsset == null) inputModule.AssignDefaultActions();
+            eventSystem.enabled = true;
+            inputModule.enabled = true;
         }
     }
 }

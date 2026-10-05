@@ -60,6 +60,7 @@ namespace Crownfall.Battle
         private void BuildSimulation()
         {
             var rules = ScriptableObject.CreateInstance<GameRulesDefinition>(); rules.hideFlags = HideFlags.DontSave;
+            CreateRuntimeArena(rules);
             var gridGo = new GameObject("BattleGrid"); gridGo.transform.SetParent(transform, false);
             var grid = gridGo.AddComponent<GridSystem>(); grid.Initialize(rules);
             Battle = gameObject.AddComponent<BattleController>();
@@ -67,6 +68,48 @@ namespace Crownfall.Battle
             field?.SetValue(Battle, grid);
             Battle.Initialize(new SeededRandomService(StableSeed(Encounter.StageId)));
             _units = new UnitFactory(Battle, Battle.Clock);
+        }
+
+        private void CreateRuntimeArena(GameRulesDefinition rules)
+        {
+            var cam = Camera.main;
+            if (cam == null)
+            {
+                var cameraGo = new GameObject("BattleCamera", typeof(Camera));
+                cameraGo.tag = "MainCamera";
+                cam = cameraGo.GetComponent<Camera>();
+            }
+            cam.orthographic = true;
+            cam.orthographicSize = 4.2f;
+            cam.transform.position = new Vector3((rules.gridWidth - 1) * .5f, (rules.gridHeight - 1) * .5f, -10f);
+            cam.backgroundColor = new Color(.075f, .095f, .065f, 1f);
+
+            var tex = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+            tex.SetPixel(0, 0, Color.white); tex.Apply();
+            var pixel = Sprite.Create(tex, new Rect(0, 0, 1, 1), new Vector2(.5f, .5f), 1f);
+
+            for (int y = -1; y <= rules.gridHeight; y++)
+            for (int x = -1; x <= rules.gridWidth; x++)
+            {
+                var tile = new GameObject($"Arena_{x}_{y}", typeof(SpriteRenderer));
+                tile.transform.SetParent(transform, false);
+                tile.transform.position = new Vector3(x, y, 1f);
+                tile.transform.localScale = Vector3.one * .96f;
+                var sr = tile.GetComponent<SpriteRenderer>();
+                sr.sprite = pixel; sr.sortingOrder = -20;
+                bool border = x < 0 || y < 0 || x >= rules.gridWidth || y >= rules.gridHeight;
+                if (border)
+                {
+                    float n = ((x * 17 + y * 31) & 3) * .012f;
+                    sr.color = new Color(.09f + n, .17f + n, .075f, 1f);
+                    tile.transform.localScale = new Vector3(1.18f, 1.18f, 1f);
+                }
+                else
+                {
+                    bool alt = ((x + y) & 1) == 0;
+                    sr.color = alt ? new Color(.28f, .31f, .20f, 1f) : new Color(.245f, .285f, .18f, 1f);
+                }
+            }
         }
 
         private void Update()
