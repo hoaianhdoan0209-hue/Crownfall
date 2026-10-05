@@ -1,3 +1,4 @@
+#if UNITY_INCLUDE_TESTS
 using NUnit.Framework;
 using Crownfall.Content;
 using Crownfall.Preparation;
@@ -7,3 +8,4 @@ namespace Crownfall.Tests.Stabilization {
   [Test] public void QuickSummon_SpendsGoldAndAddsBenchHero(){var s=new RuntimePreparationSession(FirstPlayableContentCatalog.Encounters[1],new[]{CanonicalIds.Kael});Assert.IsTrue(s.TryQuickSummon());Assert.AreEqual(7,s.Preparation.Economy.Gold);Assert.IsNotNull(s.BenchAt(0));}
  }
 }
+#endif

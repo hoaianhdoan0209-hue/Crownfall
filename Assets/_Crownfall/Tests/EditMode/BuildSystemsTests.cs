@@ -1,2 +1,4 @@
+#if UNITY_INCLUDE_TESTS
 using NUnit.Framework; using Crownfall.Stats;
 namespace Crownfall.Tests { public sealed class BuildSystemsTests { [Test] public void ModifierPipeline_UsesCanonicalOrder(){var s=new StatModifierSet();s.AddOrReplace(new StatModifier{Id="flat",Source="t",Stat=StatType.Attack,Operation=ModifierOperation.Flat,Value=10});s.AddOrReplace(new StatModifier{Id="add",Source="t",Stat=StatType.Attack,Operation=ModifierOperation.AdditivePercent,Value=.5f});s.AddOrReplace(new StatModifier{Id="mul",Source="t",Stat=StatType.Attack,Operation=ModifierOperation.MultiplicativePercent,Value=.2f});Assert.AreEqual(108f,s.Calculate(StatType.Attack,50),.001f);} [Test] public void Caps_AreEnforced(){var s=new StatModifierSet();s.AddOrReplace(new StatModifier{Id="x",Source="t",Stat=StatType.Tenacity,Operation=ModifierOperation.Override,Value=2});Assert.AreEqual(.7f,s.Calculate(StatType.Tenacity,0),.001f);} } }
+#endif

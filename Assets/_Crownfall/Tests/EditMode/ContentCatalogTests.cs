@@ -1,3 +1,4 @@
+#if UNITY_INCLUDE_TESTS
 using NUnit.Framework; using Crownfall.Content; using Crownfall.Campaign;
 namespace Crownfall.Tests { public sealed class ContentCatalogTests {
  [Test] public void CanonicalContent_HasNoValidationErrors(){ Assert.That(ContentValidator.Validate(), Is.Empty); }
@@ -6,3 +7,4 @@ namespace Crownfall.Tests { public sealed class ContentCatalogTests {
  [Test] public void StageFour_UsesBrakkGuest(){ Assert.AreEqual(CanonicalIds.Brakk,FirstPlayableContentCatalog.FindEncounter(CampaignStageId.WarfangEncounter).GuestHeroId); }
  [Test] public void Gorruk_UsesSevenBoardCapacity(){ Assert.AreEqual(7,FirstPlayableContentCatalog.FindEncounter(CampaignStageId.Gorruk).BoardCapacity); }
 }}
+#endif

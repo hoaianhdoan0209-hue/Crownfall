@@ -1,3 +1,4 @@
+#if UNITY_INCLUDE_TESTS
 using Crownfall.Battle.Combat; using NUnit.Framework;
 namespace Crownfall.Tests.EditMode {
 public sealed class CombatCoreTests {
@@ -6,3 +7,4 @@ public sealed class CombatCoreTests {
  [Test] public void NegativeArmor_IsClampedAtMinus80(){Assert.That(DamageSystem.Mitigate(100,-999),Is.EqualTo(DamageSystem.Mitigate(100,-80)).Within(.001));}
 }
 }
+#endif

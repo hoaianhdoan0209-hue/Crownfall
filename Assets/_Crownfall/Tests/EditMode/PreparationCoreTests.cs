@@ -1,3 +1,4 @@
+#if UNITY_INCLUDE_TESTS
 using Crownfall.Core; using Crownfall.Economy; using Crownfall.Preparation; using Crownfall.Units; using NUnit.Framework; using UnityEngine;
 namespace Crownfall.Tests {
 public sealed class PreparationCoreTests {
@@ -8,3 +9,4 @@ public sealed class PreparationCoreTests {
  [Test] public void StarScale_Uses_Canonical_Separate_Multipliers(){var s=StarScalingTable.Get(4);Assert.AreEqual(3.10f,s.Hp,.001f);Assert.AreEqual(2.80f,s.Attack,.001f);Assert.AreEqual(2.65f,s.Skill,.001f);}
  [Test] public void Sell_Cannot_Exceed_Gold_Cap(){var e=new BattleEconomy(98,99);e.AddGold(31);Assert.AreEqual(99,e.Gold);}
 }}
+#endif

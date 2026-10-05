@@ -1,3 +1,4 @@
+#if UNITY_INCLUDE_TESTS
 using NUnit.Framework;
 using Crownfall.Campaign;
 using Crownfall.Content;
@@ -53,3 +54,4 @@ namespace Crownfall.Tests.EditMode
         }
     }
 }
+#endif

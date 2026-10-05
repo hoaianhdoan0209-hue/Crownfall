@@ -1,3 +1,4 @@
+#if UNITY_INCLUDE_TESTS
 using NUnit.Framework;
 using Crownfall.Content;
 
@@ -24,3 +25,4 @@ namespace Crownfall.Tests.Stabilization
         }
     }
 }
+#endif

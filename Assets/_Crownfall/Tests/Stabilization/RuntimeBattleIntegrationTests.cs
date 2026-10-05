@@ -1,3 +1,4 @@
+#if UNITY_INCLUDE_TESTS
 using Crownfall.Battle;
 using Crownfall.Campaign;
 using Crownfall.Content;
@@ -18,3 +19,4 @@ namespace Crownfall.Tests.Stabilization
         [Test] public void RuntimeBattleBridgeTypes_ArePresent(){Assert.NotNull(typeof(RuntimeBattleSession));Assert.NotNull(typeof(RuntimeContentFactory));}
     }
 }
+#endif
