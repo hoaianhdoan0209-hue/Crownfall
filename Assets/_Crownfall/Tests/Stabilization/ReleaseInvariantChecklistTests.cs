@@ -8,20 +8,19 @@ namespace Crownfall.Tests.Stabilization
         [Test]
         public void CanonicalContent_ValidatesForFirstPlayable()
         {
-            var catalog = Chapter1ContentCatalog.CreateCanonical();
-            var result = ContentValidator.Validate(catalog);
-            Assert.IsTrue(result.IsValid, string.Join("\n", result.Errors));
+            var errors = ContentValidator.Validate();
+            Assert.That(errors, Is.Empty, string.Join("\n", errors));
         }
 
         [Test]
         public void Gorruk_RemainsCanonical()
         {
-            var catalog = Chapter1ContentCatalog.CreateCanonical();
-            var boss = catalog.GetEnemy("boss_gorruk");
-            Assert.AreEqual(4500, boss.MaxHealth);
+            var boss = FirstPlayableContentCatalog.FindEnemy(CanonicalIds.Gorruk);
+            Assert.NotNull(boss);
+            Assert.AreEqual(4500, boss.HP);
             Assert.AreEqual(65, boss.Attack);
             Assert.AreEqual(50, boss.Armor);
-            Assert.AreEqual(30, boss.MagicResistance);
+            Assert.AreEqual(30, boss.MR);
         }
     }
 }

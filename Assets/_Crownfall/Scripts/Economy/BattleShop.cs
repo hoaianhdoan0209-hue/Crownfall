@@ -13,8 +13,8 @@ namespace Crownfall.Economy {
   public void BeginWave(){PaidRerollsThisWave=0; FreeRefreshConsumed=false; if(!IsLocked){RefreshInternal();FreeRefreshConsumed=true;}}
   public void ToggleLock()=>IsLocked=!IsLocked;
   public bool TryManualRefresh(){ if(!FreeRefreshConsumed){FreeRefreshConsumed=true;RefreshInternal();return true;} int cost=RerollCost;if(!economy.TrySpend(cost))return false;PaidRerollsThisWave++;RefreshInternal();return true; }
-  public bool TryBuy(int index, Func<string,BattleHeroInstance> factory){ if(index<0||index>=Offers.Count||Offers[index].IsPurchased||bench.IsFull)return false;var o=Offers[index];if(!economy.TrySpend(o.Price))return false;var h=factory(o.HeroId);if(!bench.TryPlace(h)){economy.AddGold(o.Price);return false;}o.IsPurchased=true;return true; }
+  public bool TryBuy(int index, Func<string,BattleHeroInstance> factory){ if(index<0||index>=Offers.Count||Offers[index].IsPurchased||!bench.HasRoom)return false;var o=Offers[index];if(!economy.TrySpend(o.Price))return false;var h=factory(o.HeroId);if(bench.TryPlaceFirst(h)<0){economy.AddGold(o.Price);return false;}o.IsPurchased=true;return true; }
   public void Restore(List<ShopOffer> offers,bool locked,int paid,bool free){Offers.Clear();foreach(var o in offers)Offers.Add(o.Clone());IsLocked=locked;PaidRerollsThisWave=paid;FreeRefreshConsumed=free;}
-  void RefreshInternal(){Offers.Clear();for(int i=0;i<OfferCount;i++)Offers.Add(new ShopOffer{HeroId=deck.HeroIds[rng.Range(0,deck.HeroIds.Count)],Price=4});}
+  void RefreshInternal(){Offers.Clear();for(int i=0;i<OfferCount;i++)Offers.Add(new ShopOffer{HeroId=deck.Heroes[rng.Range(0,deck.Heroes.Count)].unitId,Price=4});}
  }
 }

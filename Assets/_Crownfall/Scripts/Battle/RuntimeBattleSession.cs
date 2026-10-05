@@ -161,7 +161,7 @@ namespace Crownfall.Battle
             {
                 if (!cell.IsWalkable()) continue;
                 fallback ??= cell;
-                if (enemySide ? cell.Coordinate.y >= 3 : cell.Coordinate.y < 3) return cell;
+                if (enemySide ? cell.Coordinate.Y >= 3 : cell.Coordinate.Y < 3) return cell;
             }
             return fallback;
         }
